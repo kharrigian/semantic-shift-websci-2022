@@ -1,0 +1,7 @@
+{
+    "output_dir":"./data/results/estimator/predictions/test-estimator/",
+    "models_dir":"./models/",
+    "vector_dir":"./data/results/estimator/datasets/gardenhose/english-only_min-freq-50_include-rt/vectors/",
+
+    "min_n_posts":null
+}

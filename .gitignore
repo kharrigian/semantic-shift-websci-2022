@@ -1,0 +1,16 @@
+
+## Artifacts
+*.pyc
+*pycache*
+*.DS_Store*
+*ipynb_checkpoints*
+*.egg-info*
+
+## Workspace
+.vscode/
+*workspace
+
+## Testing Artifacts
+*.coverage*
+*htmlcov*
+*.pkz

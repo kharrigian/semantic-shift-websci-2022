@@ -1,0 +1,63 @@
+{
+    "experiment_id":"reddit-template",
+    
+    "source":{
+        "config":"<PATH_TO_SOURCE>/subsets/config.json",
+        "splits":"<PATH_TO_SOURCE>/subsets/splits/<SOURCE>/0.json",
+        "embeddings":"<PATH_TO_SOURCE>/subsets/models/sample-<SAMPLE_IND>/",
+        "min_vocab_freq":50,
+        "min_shift_freq":50,
+        "top_k_neighbors":500,
+        "rm_top":250,
+        "rm_stopwords":true
+    },
+    "target":{
+        "config":"<PARH_TO_TARGET>/subsets/config.json",
+        "splits":"<PARH_TO_TARGET>/subsets/splits/<TARGET>/0.json",
+        "embeddings":"<PARH_TO_TARGET>/subsets/models/sample-<SAMPLE_IND>/",
+        "min_vocab_freq":50,
+        "min_shift_freq":50,
+        "top_k_neighbors":500,
+        "rm_top":250,
+        "rm_stopwords":true
+    },
+    "evaluation":{
+        "config":"<PATH_TO_SOURCE>/subsets/config.json",
+        "splits":"<PATH_TO_SOURCE>/subsets/splits/<SOURCE>/0.json"
+    },
+
+    "classifier_k_models":10,
+    "classifier_resample_rate":0.8,
+    "classifier_min_vocab_freq":1,
+    "classifier_min_vocab_sample_freq":1,
+    "classifier_min_n_posts":200,
+    "classifier_n_posts":null,
+
+    "selectors_percentiles":[90, 80, 70, 60, 50, 40, 30, 20, 10],
+    "selectors_sample_support":0.9,
+    "selectors":[
+        "cumulative",
+        "intersection",
+        "random",
+        "frequency",
+        "chi2",
+        "coefficient",
+        "overlap",
+        "weighted_overlap-coefficient_0.5"
+    ],
+
+    "cv_metric_opt":"f1",
+    "feature_standardize":false,
+    "feature_flags":{
+        "bag_of_words":false,
+        "tfidf":true,
+        "liwc":false,
+        "lda":false,
+        "glove":false
+    },
+    "feature_kwargs":{
+        "tfidf":{"norm":"l2"}
+    },
+
+    "random_state":42
+}
