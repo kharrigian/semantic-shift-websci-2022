@@ -59,53 +59,6 @@ PLATFORM_MAP = {
 ### Classes
 ########################
 
-class MultiMap(object):
-    
-    """
-
-    """
-
-    def __init__(self,
-                 num_jobs=1):
-        """
-
-        """
-        self.num_jobs = num_jobs
-        if self.num_jobs > 1:
-            LOGGER.info(f"Using Multiprocessing with {self.num_jobs} Jobs")
-            self.pool = Pool(self.num_jobs)
-        else:
-            LOGGER.info("Not Using Multiprocessing")
-            self.pool = None
-    
-    def _iterable(self,
-                  func,
-                  iterable):
-        """
-
-        """
-        for i in iterable:
-            yield func(i)
-        
-    def imap_unordered(self,
-                       func,
-                       iterable):
-        """
-
-        """
-        if self.num_jobs > 1:
-            res = self.pool.imap_unordered(func, iterable)
-        else:
-            res = self._iterable(func, iterable)
-        return res
-
-    def close(self):
-        """
-
-        """
-        if self.num_jobs > 1:
-            _ = self.pool.close()
-
 class TextStream(object):
 
     """
@@ -478,8 +431,8 @@ def plot_match_timeseries(match_counts,
     ax[1].set_ylabel("Matches Per Post", fontweight="bold", fontsize=12)
     if len(terms) > 1:
         ax[1].legend(loc="upper left",
-                  frameon=False,
-                  bbox_to_anchor=(1.025, 1))
+                     frameon=False,
+                     bbox_to_anchor=(1.025, 1))
     else:
         fig.suptitle(f"Query: '{terms[0]}'",
                      fontweight="bold",
@@ -541,7 +494,7 @@ def main():
     post_examples = []
     ## Process Each Dataset
     datasets = config.get("datasets",[])
-    with MultiMap(config.get("jobs",1)) as mp:
+    with Pool(config.get("jobs",1)) as mp:
         for d, dataset in enumerate(datasets):
             ## Update User
             LOGGER.info(f"Starting Dataset {d+1}/{len(datasets)}")

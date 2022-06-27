@@ -1,6 +1,9 @@
 
 """
-Parallelize tracking script across CLSP grid
+Parallelize tracking script across CLSP grid. Note that this is better
+for a small number of large files than a large number of small files. For 
+the latter, recommend just calling the track_apply.py script directly
+and using multiprocessing within the same job.
 """
 
 #################
@@ -10,10 +13,9 @@ Parallelize tracking script across CLSP grid
 ## Experiment Info
 EXPERIMENT_ID = "gardenhose"
 EXPERIMENT_OUTDIR = "./data/results/track/gardenhose/"
-EXPERIMENT_BASE_CONFIG = "./configs/experiments/track/gardenhose.json"
+EXPERIMENT_BASE_CONFIG = "./configs/track/gardenhose.json"
 EXPERIMENT_DATASETS = [
-    "/export/c12/mdredze/twitter/public/2019/*/*.gz",
-    "/export/c12/mdredze/twitter/public/2020/*/*.gz"
+    "/export/c01/kharrigian/semantic-shift-websci-2022/data/processed/twitter/gardenhose/*.gz"
 ]
 
 ## CLSP Grid Parameters
@@ -107,7 +109,7 @@ def make_sh_file(lower_bound,
     #!/bin/bash
     {}
     {}
-    python scripts/experiments/track_apply.py {}/{} --output_dir {}
+    python scripts/model/track_apply.py {}/{} --output_dir {}
     """.format(header, init, output_dir, "configs/${SGE_TASK_ID}.json", output_dir)
     script = dedent(script)
     script = script.replace("//","/")

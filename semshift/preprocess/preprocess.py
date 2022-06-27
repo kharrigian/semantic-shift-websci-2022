@@ -470,7 +470,7 @@ class RawDataLoader(object):
             if sample_rate is not None and isinstance(sample_rate, tuple):
                 if seed.choice(sample_rate[0]) not in sample_rate[1]:
                     continue
-            elif sample_rate is not None and not isinstance(sample_reate, tuple):
+            elif sample_rate is not None and not isinstance(sample_rate, tuple):
                 if sample_rate is not None and sample_rate < 1:
                     if seed.uniform(0,1) >= sample_rate:
                         continue
@@ -538,7 +538,7 @@ class RawDataLoader(object):
                     if sample_rate is not None and isinstance(sample_rate, tuple):
                         if seed.choice(sample_rate[0]) not in sample_rate[1]:
                             continue
-                    elif sample_rate is not None and not isinstance(sample_reate, tuple):
+                    elif sample_rate is not None and not isinstance(sample_rate, tuple):
                         if sample_rate is not None and sample_rate < 1:
                             if seed.uniform(0,1) >= sample_rate:
                                 continue
@@ -575,7 +575,8 @@ class RawDataLoader(object):
                     ## Cache or Stream
                     count += 1
                     data.append(line_data)
-            except:
+            except Exception as e:
+                print("Error occurred", e)
                 pass
         ## Check For Alternative Data Options if No Data Found
         if len(data) == 0 and count == 0:

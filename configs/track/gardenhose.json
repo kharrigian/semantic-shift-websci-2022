@@ -2,7 +2,7 @@
     "experiment_name":"gardenhose",
     "datasets":[
         {
-            "dataset":"/export/c01/kharrigian/semantic-shift-websci-2022/data/processed/gardenhose/*.gz",
+            "dataset":"/export/c01/kharrigian/semantic-shift-websci-2022/data/processed/twitter/gardenhose/*.gz",
             "target_disorder":"custom-twitter",
             "date_boundaries":{
                 "min_date":null,

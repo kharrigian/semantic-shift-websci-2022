@@ -1,5 +1,5 @@
 {
-    "experiment_name":"reddit-active",
+    "experiment_name":"active",
     "datasets":[
         {
             "dataset":"/export/c01/kharrigian/semantic-shift-websci-2022/data/processed/reddit/active/*.gz",

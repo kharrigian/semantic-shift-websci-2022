@@ -25,3 +25,10 @@ To preprocess the unlabeled datasets, please use `scripts/preprocess/preprocess.
 Once you have the unlabeled datasets processed, you can apply additional filtering if necessary to clean things up (e.g., isolate a subset of users meeting a certain criteria, initialize date-based boundaries). In our study, we used the `scripts/preprocess/preprocess_filter.py` to isolate Twitter users with at least 50 posts in the preprocessed dataset.
 
 ## Phase 3: Modeling and Experimentation
+
+Once data has been curated, we can move on to the fun stuff - modeling and data analysis. Everything relevant can be found in `scripts/model/`. There are 4 main sections of analysis, each of which is described in detail within the README within the `scripts/model/` directory.
+
+* `track`: Measure prevalence of certain keywords/phrases over the course of time.
+* `word2vec`: Train word2vec embedding models and evaluate use of semantic stability as a feature selection method.
+* `estimator`: Train depression classifiers using a variety of vocabularies (e.g., via semantically stable feature selection) and evaluate their estimate of change in depression prevalence.
+* `visualizations`: Supplementary visualizations that merge data across multiple experimental runs.

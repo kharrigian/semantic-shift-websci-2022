@@ -16,6 +16,7 @@
 *.pkz
 
 ## Data
+logs/
 data/raw/
 data/processed/
 data/results/
