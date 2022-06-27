@@ -6,7 +6,7 @@ This section of the repository contains code that is used for the primary meat o
 * `word2vec`: Train word2vec embedding models and evaluate use of semantic stability as a feature selection method.
 * `estimator`: Train depression classifiers using a variety of vocabularies (e.g., via semantically stable feature selection) and evaluate their estimate of change in depression prevalence.
 
-## Track
+## Keyword Tracking
 
 Measure usage of keywords/keyphrases over time within a dataset. There are two options of running this analysis. By default, results are stored in `data/results/track/`.
 
@@ -31,9 +31,117 @@ If you have a large number of small files, this approach is recommended. For exa
 python scripts/model/track_apply.py configs/track/active.json --make_plots
 ```
 
-## Word2Vec
+## Semantic Stability for Feature Selection
 
-#### Procedure
+This series of experiments is designed to understand whether use of semantic stability scores can improve predictive generalization over time. Our implementation makes heavy use of parallelization over our institution's grid, though it is not explicitly necessary. One should be able to run the commands manually in place of our scheduler.
+
+### Procedure
+
+1. **Train word2vec embedding models on multiple subsets of an annotated dataset.** Use `scripts/model/word2vec_schedule.py` to create configuration files (and optionally schedule training) for the word2vec models. For those not using an SGE schedule, you can set `USE_SCHEDULER=False` in the header of the script. This will generate necessary runtime files which can then be executed independently. See the header of the schedule file to see what parameters can be changed. Outside of dataset-specific parameters (e.g., name, time periods), all other parameters are those which were used in the final paper.
+
+For those who do not have access to an SGE scheduler, look for the .sh files generated in the output directory of the scheduler (e.g., `data/results/word2vec-context/clpsych/`). The python command at the end of the script (after environment initialization) can be used to train the models in serial. For example:
+
+```
+python scripts/model/word2vec_train.py \
+    ./data/results/word2vec-context/clpsych/2012-01-01_2013-01-01.json \
+    --output_dir ./data/results/word2vec-context/clpsych/ \
+    --stream_cache_dir ./data/results/word2vec-context/clpsych/cache/
+```
+
+2. **Vectorize each of the data subsets.** Each of the word2vec models trained in the step above is associated with a "Phraser" vocabulary model. We will use this model to tokenize and re-phrase the training/evaluation subsets, ultimately transforming everything into a bag-of-words representation.
+
+Begin by updating the file `configs/word2vec/postprocess_template.json` to represent your modeling interests (e.g., specify path to the models trained). Our goal is vectorization. This can be done in parallel, serial, or by making use of previously vectorized data for the given dataset.
+
+#### Option 1: Serial (No SGE Access)
+
+```
+python scripts/model/word2vec_postprocess.py \
+    configs/word2vec/postprocess_template.json \
+    --vectorize serial
+    --jobs 2
+```
+
+or you can specify individual split IDs (replacing `$ID`)
+
+```
+python scripts/model/word2vec_postprocess.py \
+    configs/word2vec/postprocess_template.json \
+    --vectorize parallel \
+    --vectorize_id $ID
+    --jobs 2
+```
+
+#### Option 2: Parallel (SGE Access)
+
+```
+python scripts/model/word2vec_postprocess.py \
+    configs/word2vec/postprocess_template.json \
+    --vectorize parallel \
+    --grid_memory_per_job 16 \
+    --grid_max_array_size 100 \
+    --jobs 2
+```
+
+#### Option 3: Symbolic Vectorization
+
+If you have already vectorized one of these datasets and want to try a new set of modeling parameters (i.e. one of the later stages), there's no need to revectorize the dataset. You can instead tweak the previous configuration file and then specify you'd like to generate a symbolic vector set based on an existing cache.
+
+```
+## Replace <analysis_dir_name> with the existing vector path
+python scripts/model/word2vec_postprocess.py \
+    configs/word2vec/postprocess_template_new.json \
+    --vectorize symbolic \
+    --vectorize_symbolic_path "./data/results/word2vec/clpsych/analysis/<analysis_dir_name>/data-cache/"
+```
+
+3. **Train Classification Models.** With the data vectorized, you can now train classification models using a variety of feature selection strategies. All modeling parameters can be specified in the configuration JSON file. Note that "classifier_k_models" indicates how many models will be trained for each of the prior data splits (i.e., by performing additional data splitting that respects train/test splits but uses a single word2vec embedding based on the training data).
+
+#### Option 1: Serial (No SGE)
+
+```
+python scripts/model/word2vec_postprocess.py \
+    configs/word2vec/postprocess_template.json \
+    --classify serial \
+    --classify_enforce_frequency_filter \
+    --jobs 8
+```
+
+or by directly specifying the ID.
+
+```
+python scripts/model/word2vec_postprocess.py \
+    configs/word2vec/postprocess_template.json \
+    --classify parallel \
+    --classify_id $ID \
+    --classify_enforce_frequency_filter \
+    --jobs 8
+```
+
+### Option 2: Parallel (SGE)
+
+If you have already tested the code by running the serial implementation (or started a series of jobs and experienced some unexpected failure), you can include the `--classify_skip_existing` flag below. 
+
+```
+python scripts/model/word2vec_postprocess.py \
+    configs/word2vec/postprocess_template.json \
+    --classify parallel \
+    --classify_enforce_frequency_filter \
+    --classify_skip_existing \
+    --grid_memory_per_job 16 \
+    --grid_max_array_size 100 \
+    --jobs 8
+```
+
+4. **Merge and Analyze the Results.** Once all samples have completed, we can merge the results together to generate a single analysis of the effectiveness of semantic stability as a feature selection criteria. This part does not use any SGE scheduling.
+
+```
+python scripts/model/word2vec_postprocess.py \
+    configs/word2vec/postprocess_template.json \
+    --analyze \
+    --jobs 8
+```
+
+5. **Interpret the Results.** Dive into the output directory and examine the difference in classification performance as a function of feature selection methodology. Note that fine-grained results for each split can also be found within the `result-cache/*` subdirectories.
 
 ## Estimator
 

@@ -393,7 +393,7 @@ def get_init_env():
     """
     init_env=f"""
     ENV="semshift"
-    RUN_LOC="/export/fs03/a08/kharrigian/semantic-shift-websci-2022/"
+    RUN_LOC="/export/c01/kharrigian/semantic-shift-websci-2022/"
     """
     init_env+="""
     ## Move to Home Directory (Place Where Virtual Environments Live)
@@ -431,7 +431,7 @@ def make_sh_file(lower_bound,
     #!/bin/bash
     {}
     {}
-    python scripts/experiments/word2vec_train.py {}/config.json --resample_parallel --resample_parallel_sample $SGE_TASK_ID --output_dir {} --stream_cache_dir {} {} {}
+    python scripts/model/word2vec_train.py {}/config.json --resample_parallel --resample_parallel_sample $SGE_TASK_ID --output_dir {} --stream_cache_dir {} {} {}
     """.format(header,
                init,
                experiment_output_dir,

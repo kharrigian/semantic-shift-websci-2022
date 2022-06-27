@@ -1,36 +1,42 @@
 
 """
-Evaluate semantic shift using word2vec neighbor approach.
+Train multiple word embedding models for a dataset under
+a variety of samples and time periods.
 """
 
 ######################
 ### Configuration
 ######################
 
-## Baseline Flag (One of None, "file", or "post")
-BASELINES = "post"
+## Location of Repository
+BASE_DIR="/export/c01/kharrigian/semantic-shift-websci-2022/"
+
+## Desired Location of Outputs
+BASE_OUTPUT_DIR = f"{BASE_DIR}/data/results/word2vec-context/" ## Base Output directory
+
+## Baseline Flag (One of None, "file", or "post" - The latter two are for experimental purposes)
+BASELINES = None
 
 ## Experiment Name
-EXPERIMENT_ID = "clpsych-english_only-v3"
+EXPERIMENT_ID = "clpsych"
+
+## Script Parameters
+DRY_RUN = False ## See how many jobs would be run by setting to True
+USE_SCHEDULER = True ## If False, only generate the files passed to word2vec_train.py
+RM_EXISTING = False ## Whether to remove existing output directory if it exists
+SUPPORT_NUM_JOBS = 8 ## Number of jobs to use in this script when computing number of users
 
 ## CLSP Grid Parameters
-BASE_DIR="/export/c01/kharrigian/semantic-shift-websci-2022/"
-DRY_RUN = False
 GRID_USERNAME = "kharrigian"
 GRID_MEMORY_REQUEST_SIZE = 32
 GRID_MAX_ARRAY = 500
-GRID_NUM_JOBS = 2
-GRID_LOG_DIR = f"{BASE_DIR}/logs/word2vec-context/clpsych-english_only-v3/baseline-post/"
-
-## Meta Parameters
-BASE_OUTPUT_DIR = f"{BASE_DIR}/data/results/word2vec-context/"
-SUPPORT_NUM_JOBS = 8
-RM_EXISTING = False
+GRID_NUM_JOBS = 4
+GRID_LOG_DIR = f"{BASE_DIR}/logs/word2vec-context/{EXPERIMENT_ID}/{BASELINES}/"
 
 ## Specify Base Config Template
-BASE_WORD2VEC_CONFIG = "./configs/word2vec/embed_template.json"
+BASE_WORD2VEC_CONFIG = "./configs/word2vec/embed_template.json" ## Base parameters for the word2vec Model
 
-## Specify Dataset and Temporal Split Parameters
+## Specify Dataset Parameters (e.g., whether to balance the dataset or subsample on a post level)
 DATASET_PARAMETERS = {
     "dataset":"clpsych",
     "dataset-id":"clpsych",
@@ -49,12 +55,16 @@ DATASET_PARAMETERS = {
         "randomized":True
     }
 }
+
+## Data Splitting Parameters
 SAMPLE_PROTOCOL = {
-        "resample":True,
-        "n_sample":100,
-        "test_size":0.2,
-        "resample_files":True
+        "resample":True, ## Set this to True if you want to resample the training data
+        "n_sample":5, ## Specify number of random sample if resample is True
+        "test_size":0.2, ## Size of the held-out test set in each sample
+        "resample_files":True ## Whether sampling is done at file-level (user-level)
 }
+
+## Temporal Boundaries (Dataset-specific)
 DATE_BOUNDARIES = [
     # "2011-01-01",
     "2012-01-01",
@@ -251,17 +261,19 @@ def get_qsub_script(config_file,
     #!/bin/bash
     {}
     {}
-    python scripts/experiments/word2vec_train.py {} --output_dir {} --resample_parallel {} --grid_max_array {} --grid_memory_request_size {} --grid_log_dir {} --stream_cache_dir {}
+    python scripts/model/word2vec_train.py {} --output_dir {} --stream_cache_dir {} {} --resample_parallel --grid_max_array {} --grid_memory_request_size {} --grid_log_dir {}
     """.format(header,
                init_env,
                config_file,
                output_dir,
+               f"{output_dir}/cache/",
                "--rm_existing" if rm_existing else "",
                grid_max_array,
                memory,
-               f"{output_dir}/logs/",
-               f"{output_dir}/cache/")
+               f"{output_dir}/logs/")
     script = dedent(script)
+    if not USE_SCHEDULER:
+        script = script.split("--resample_parallel")[0]
     script = "\n".join([i.lstrip() for i in script.split("\n")])
     return script
 
@@ -363,10 +375,11 @@ def main():
             jobs.append("Dry Run Job ID")
             continue
         ## Schedule
-        command = f"qsub {exp_script_file}"
-        job_id = subprocess.check_output(command, shell=True)
-        jobs.append(job_id)
-        LOGGER.info(job_id)
+        if USE_SCHEDULER:
+            command = f"qsub {exp_script_file}"
+            job_id = subprocess.check_output(command, shell=True)
+            jobs.append(job_id)
+            LOGGER.info(job_id)
     ## Update User
     if DRY_RUN:
         LOGGER.info("Found {} Jobs Total (Dry Run Only).".format(len(jobs)))

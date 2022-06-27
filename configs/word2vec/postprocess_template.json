@@ -1,0 +1,43 @@
+{
+    "base_output_dir":"./data/results/word2vec-context/",
+    "base_output_dir_ext":"clpsych",
+
+    "min_train_posts":200,
+    "min_test_posts":200,
+    "train_posts":null,
+    "test_posts":null,
+
+    "analysis_id":"minposts-200_aggposts-all_base",
+    "min_vocab_freq":50,
+    "min_shift_freq":100,
+    "top_k_neighbors":500,
+    
+    "rm_top":250,
+    "rm_stopwords":true,
+
+    "uniform_class_balance":true,
+    "uniform_period_balance":true,
+
+    "vocab_percentiles":[90, 80, 70, 60, 50, 40, 30, 20, 10],
+    "selection_beta":[0.1,0.50,0.9],
+    "selection_sample_specific":false,
+    "selection_sample_support":0.9,
+    
+    "metric_types":["accuracy","f1","auc"],
+
+    "classifier_min_vocab_freq":1,
+    "classifier_min_vocab_sample_freq":1,
+    "classifier_k_models":10,
+
+    "cv_metric_opt":"f1",
+    "feature_standardize":false,
+    "feature_flags":{
+        "tfidf":true
+    },
+    "feature_kwargs":{
+        "tfidf":{"norm":"l2"}
+    },
+
+    "num_jobs":8,
+    "random_seed":42
+}

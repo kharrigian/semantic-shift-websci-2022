@@ -211,7 +211,7 @@ def format_parallel_script_vectorize(lower_bound,
     #!/bin/bash
     {}
     {}
-    python scripts/experiments/word2vec_postprocess.py {} --vectorize parallel --vectorize_id $SGE_TASK_ID --jobs {} {}
+    python scripts/model/word2vec_postprocess.py {} --vectorize parallel --vectorize_id $SGE_TASK_ID --jobs {} {}
     """.format(header, init, analysis_config_filename, num_jobs, "--vectorize_skip_existing" if skip_existing else "")
     script = dedent(script)
     script = script.replace("//","/")
@@ -248,7 +248,7 @@ def format_parallel_script_classify(lower_bound,
     #!/bin/bash
     {}
     {}
-    python scripts/experiments/word2vec_postprocess.py {} --classify parallel --classify_id $SGE_TASK_ID --jobs {} {} {} {} {} {} {}
+    python scripts/model/word2vec_postprocess.py {} --classify parallel --classify_id $SGE_TASK_ID --jobs {} {} {} {} {} {} {}
     """.format(header,
                init,
                analysis_config_filename,
@@ -603,7 +603,7 @@ def _update_split_keys(splits):
     """
     
     """
-    local_root = os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + "/../../../../") + "/"
+    local_root = os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + "/../../") + "/"
     filename2root = lambda f: os.path.abspath(os.path.dirname(f) + "/../../../../") + "/"
     filename2local = lambda f: f.replace(filename2root(f), local_root)
     updated_splits = {"train":{},"test":{}}
@@ -2356,7 +2356,7 @@ def generate_relative_performance_difference_summary(relative_performance_differ
             df.loc[index, col] += "*"
         df = df.applymap(lambda i: i + " " if "*" not in i else i)
         return df
-    get_agg_performance = lambda df, by_time, pref_higher: indicate_ci_max(df.groupby(["time_period_train","time_period_apply"]).agg({sel:bootstrap_ci for sel in selectors}).applymap(ci_to_str), pref_higher) if by_time else indicate_ci_max(df[selectors].apply(lambda row: bootstrap_ci(row)).map(ci_to_str).to_frame().T, pref_higher)
+    get_agg_performance = lambda df, by_time, pref_higher: indicate_ci_max(df.groupby(["time_period_train","time_period_apply"]).agg({sel:bootstrap_ci for sel in selectors}).applymap(ci_to_str), pref_higher) if by_time else indicate_ci_max(df[selectors].apply(lambda row: bootstrap_ci(row)).apply(ci_to_str).to_frame().T, pref_higher)
     agg_performance_avg = get_agg_performance(avg_opt_performance, True, True); agg_performance_avg_all = get_agg_performance(avg_opt_performance, False, True)
     agg_performance_within_opt = get_agg_performance(opt_performance_within, True, True); agg_performance_within_opt_all = get_agg_performance(opt_performance_within, False, True)
     agg_performance_between_opt = get_agg_performance(opt_performance_between, True, True); agg_performance_between_opt_all = get_agg_performance(opt_performance_between, False, True)
@@ -2643,18 +2643,18 @@ def main():
             for tp_ind, sample_ind, sample_split_filename, sample_embedding_directory in sample_id_list:
                 ## Vectorize the Sample
                 _ = vectorize_time_period_data_sample(sample_ind=sample_ind,
-                                                    sample_split_filename=sample_split_filename,
-                                                    sample_embedding_directory=sample_embedding_directory,
-                                                    analysis_directory=analysis_directory,
-                                                    time_period_config=time_period_configs[tp_ind],
-                                                    min_n_posts_train=analysis_config["min_train_posts"],
-                                                    min_n_posts_test=analysis_config["min_test_posts"],
-                                                    n_posts_train=analysis_config["train_posts"],
-                                                    n_posts_test=analysis_config["test_posts"],
-                                                    random_state=analysis_config["random_seed"],
-                                                    mp=mp,
-                                                    verbose=True,
-                                                    skip_existing=args.vectorize_skip_existing)
+                                                      sample_split_filename=sample_split_filename,
+                                                      sample_embedding_directory=sample_embedding_directory,
+                                                      analysis_directory=analysis_directory,
+                                                      time_period_config=time_period_configs[tp_ind],
+                                                      min_n_posts_train=analysis_config["min_train_posts"],
+                                                      min_n_posts_test=analysis_config["min_test_posts"],
+                                                      n_posts_train=analysis_config["train_posts"],
+                                                      n_posts_test=analysis_config["test_posts"],
+                                                      random_state=analysis_config["random_seed"],
+                                                      mp=mp,
+                                                      verbose=True,
+                                                      skip_existing=args.vectorize_skip_existing)
         ## Done
         LOGGER.info("[Vectorization Complete. Exiting.]")
         return None
