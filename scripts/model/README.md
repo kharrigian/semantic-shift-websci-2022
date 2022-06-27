@@ -1,8 +1,35 @@
+# Modeling and Data Analysis
 
+This section of the repository contains code that is used for the primary meat of our paper (e.g., modeling and data analysis). In addition to visualization code that summarizes results across analyses, we have three main types of analysis denoted with the following prefixes:
+
+* `track`: Measure prevalence of certain keywords/phrases over the course of time.
+* `word2vec`: Train word2vec embedding models and evaluate use of semantic stability as a feature selection method.
+* `estimator`: Train depression classifiers using a variety of vocabularies (e.g., via semantically stable feature selection) and evaluate their estimate of change in depression prevalence.
 
 ## Track
 
-#### Procedure
+Measure usage of keywords/keyphrases over time within a dataset. There are two options of running this analysis. By default, results are stored in `data/results/track/`.
+
+#### Option 1: Map/Reduce
+
+If you have a smaller number of large files, this approach is recommended. For example, we have on the order of 2000 data files for the "gardenhose" Twitter dataset, each of which is quite large. For this reason, we map the counting procedure across the files during the first stage of analysis and then aggregate the results during the second stage.
+
+```
+## Parallelize Across Compute Cluster
+python scripts/model/track_schedule.py
+
+## Aggregate Results
+python scripts/model/track_postprocess.py
+```
+
+#### Option 2: Multiprocessing
+
+If you have a large number of small files, this approach is recommended. For example, we have 50,000 data files in the "active" Reddit dataset, each of which is small. Here, it doesn't make sense to schedule a single process for each file. Instead, we use multiprocessing within a single job to process all the files.
+
+```
+## Apply Tracking
+python scripts/model/track_apply.py configs/track/active.json --make_plots
+```
 
 ## Word2Vec
 
