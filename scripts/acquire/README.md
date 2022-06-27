@@ -9,6 +9,8 @@ Scripts for the acquisition of data on which our models are trained and evaluate
 * `clpsych`: "CLPsych 2015 Shared Task: Depression and PTSD on Twitter". For more information, contact Mark Dredze (mdredze@cs.jhu.edu).
 * `multitask`: "Multi-Task Learning for Mental Health using Social Media Text". For more information, contact Glen Coppersmith (glen@qntfy.com).
 
+*Note*: Once you have this data, you can compile a single label mapping for the two datasets using `scripts/acquire/twitter/qntfy/0_get_qntfy.py`.
+
 #### Reddit
 
 * `smhd`: "SMHD: A Large-Scale Resource for Exploring Online Language Usage for Multiple Mental Health Conditions". For more infroatmion, see http://ir.cs.georgetown.edu/resources/smhd.html.

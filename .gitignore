@@ -14,3 +14,13 @@
 *.coverage*
 *htmlcov*
 *.pkz
+
+## Data
+data/raw/
+data/processed/
+data/results/
+data/resources/glove.twitter*
+data/resources/liwc2007.dic
+
+## Plots
+plots/

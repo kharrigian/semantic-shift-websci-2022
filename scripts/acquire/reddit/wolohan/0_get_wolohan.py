@@ -2,6 +2,13 @@
 ## Standard Data Directory
 DATA_DIR = "./data/raw/reddit/wolohan/"
 
+## Dataset Parameters
+subreddit_queries = ["depression", "AskReddit"]
+min_words = 1000
+n_authors = 10000
+prefix = "wolohan"
+author_chunksize = 20
+
 ######################
 ### Imports
 ######################
@@ -16,7 +23,7 @@ import joblib
 import pandas as pd
 
 ## Local
-from retriever import RedditData
+from retriever import Reddit as RedditData
 
 ######################
 ### Output Setup
@@ -56,13 +63,6 @@ Method:
     - Filter out users with less than 1000 words used across 
       comments and submissions
 """
-
-## Parameters
-subreddit_queries = ["depression", "AskReddit"]
-min_words = 1000
-n_authors = 10000
-prefix = "wolohan"
-author_chunksize = 20
 
 ## Initial Date (Working Backwards)
 current_date = datetime.datetime.now()
@@ -172,12 +172,14 @@ for s, subreddit in enumerate(subreddit_queries):
         ## Retrieve Data
         author_comments = reddit.retrieve_author_comments(
                     author=author_group,
-                    end_date=current_date.date().isoformat(),
+                    start_date="2016-01-01",
+                    end_date="2020-01-01",
                     limit=None
         )
         author_submissions = reddit.retrieve_author_submissions(
                     author=author_group,
-                    end_date=current_date.date().isoformat(),
+                    start_date="2016-01-01",
+                    end_date="2020-01-01",
                     limit=None
         )
         ## Filter By Word Count

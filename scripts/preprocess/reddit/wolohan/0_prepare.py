@@ -5,7 +5,7 @@ NUM_PROCESSES = 8
 ## Data Directory Path and Dataset Prefix
 RAW_DATA_DIR = "./data/raw/reddit/wolohan/"
 PROCESSED_DATA_DIR = "./data/processed/reddit/wolohan/"
-LABEL_FILE = f"{RAW_DATA_DIR}wolohan_label_map.joblib" # Output from scripts/acquire/get_wolohan.py
+LABEL_FILE = f"{RAW_DATA_DIR}wolohan_label_map.joblib" # Output from scripts/acquire/0_get_wolohan.py
 
 ## Flag to remove existing data
 REMOVE_EXISTING = True
@@ -44,7 +44,7 @@ logger = initialize_logger()
 author_labels = joblib.load(LABEL_FILE)
 
 ## Root Directory
-ROOT_DIR = os.path.abspath(os.path.dirname(__file__) + "/../../../")
+ROOT_DIR = os.path.abspath(os.path.dirname(__file__) + "/../../../../")
 
 #####################
 ### Helper Functions

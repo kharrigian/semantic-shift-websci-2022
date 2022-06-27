@@ -47,7 +47,7 @@ author_labels = pd.read_csv(LABEL_FILE)
 author_labels.set_index("source", inplace=True)
 
 ## Root Directory
-ROOT_DIR = os.path.abspath(os.path.dirname(__file__) + "/../../../")
+ROOT_DIR = os.path.abspath(os.path.dirname(__file__) + "/../../../../")
 
 #####################
 ### Functions

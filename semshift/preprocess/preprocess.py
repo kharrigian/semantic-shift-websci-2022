@@ -348,7 +348,9 @@ class RawDataLoader(object):
                  platform,
                  random_state=None,
                  lang=None,
-                 run_pipeline=True):
+                 run_pipeline=True,
+                 keep_retweets=True,
+                 keep_non_english=True):
         """
 
         """
@@ -356,6 +358,10 @@ class RawDataLoader(object):
         self.random_state = random_state
         self.lang = lang if lang is None else set(lang)
         self._run_pipeline = run_pipeline
+        self._keep_retweets = keep_retweets
+        self._keep_non_english = keep_non_english
+        if not self._keep_non_english:
+            self.lang = set(["en"])
     
     def _doc_in_range(self,
                       document,
@@ -471,6 +477,10 @@ class RawDataLoader(object):
             ## Twitter Format
             if self.platform == "twitter" and isinstance(line_data.get("user"),dict):
                 line_data = format_tweet_data(line_data)
+            ## Attribute Check
+            if self.platform == "twitter" and not self._keep_retweets:
+                if line_data["text"] is not None and (line_data["text"].startswith("RT") or " RT " in line_data["text"]):
+                    continue
             ## Preliminary Language Check
             if self.lang is not None and self.platform == "twitter":
                 line_data_lang = line_data.get("lang")
@@ -543,6 +553,10 @@ class RawDataLoader(object):
                     ## Twitter Formating
                     if self.platform == "twitter" and isinstance(line_data.get("user"),dict):
                         line_data = format_tweet_data(line_data)
+                    ## Attribute Check
+                    if self.platform == "twitter" and not self._keep_retweets:
+                        if line_data["text"] is not None and (line_data["text"].startswith("RT") or " RT " in line_data["text"]):
+                            continue
                     ## Preliminary Language Check
                     if self.lang is not None and self.platform == "twitter":
                         line_data_lang = line_data.get("lang")

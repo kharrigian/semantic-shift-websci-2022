@@ -67,7 +67,7 @@ if not os.path.exists(OUTDIR):
 sampler = Random(RANDOM_STATE)
 cohort_sample = []
 for c in cohort:
-    if sampler.uniform(0, 1) >= SAMPLE_PERCENT:
+    if SAMPLE_PERCENT is not None and sampler.uniform(0, 1) >= SAMPLE_PERCENT:
         continue
     cohort_sample.append(c)
 

@@ -27,6 +27,7 @@ from tqdm import tqdm
 from semshift.util.logging import initialize_logger
 from semshift.preprocess.preprocess import (tokenizer,
                                             format_tweet_data)
+from semshift.preprocess.preprocess import RawDataLoader
 
 #######################
 ### Globals
@@ -91,6 +92,14 @@ def parse_arguments():
                         type=str,
                         choices=["twitter","reddit"],
                         help="Platform from which the data comes")
+    parser.add_argument("--min_date",
+                        type=str,
+                        default=None,
+                        help="Lower date boundary if desired.")
+    parser.add_argument("--max_date",
+                        type=str,
+                        default=None,
+                        help="Upper date boundary if desired.")
     parser.add_argument("--jobs",
                         type=int,
                         default=1,
@@ -128,6 +137,8 @@ def get_file_list(args):
         raise ValueError("Did not recognize command line --input")
 
 def process_tweet_file(f,
+                       min_date=None,
+                       max_date=None,
                        output_folder=None,
                        keep_retweets=False,
                        keep_non_english=False):
@@ -137,6 +148,8 @@ def process_tweet_file(f,
     Args:
         f (str): Path to tweet data. Expected to contain all tweets
                  desired for a single individual
+        min_date
+        max_date
         output_folder (str): Path to output folder for caching processed
                              data. If None, returns processed data itself
         keep_retweets (bool): If True, does not filter out retweets
@@ -157,41 +170,15 @@ def process_tweet_file(f,
         fname = f"{output_folder}/{fname}"
         if os.path.exists(fname):
             return fname
-    ## Load Tweet Data
-    if f.endswith(".gz"):
-        file_opener = gzip.open
-    else:
-        file_opener = open
-    try:
-        with file_opener(f, "r") as the_file:
-            tweet_data = [format_tweet_data(i) for i in json.load(the_file)]
-    except json.JSONDecodeError:
-        with file_opener(f, "r") as the_file:
-            tweet_data = []
-            for line in the_file:
-                tweet_data.append(format_tweet_data(json.loads(line)))
-    ## Transform into DataFrame
-    tweet_data = pd.DataFrame(tweet_data).dropna(subset=["text"])
-    ## Filtering
-    if not keep_retweets:
-        tweet_data = tweet_data.loc[~tweet_data["text"].str.startswith("RT")].reset_index(drop=True).copy()
-        tweet_data = tweet_data.loc[~tweet_data["text"].str.contains(" RT ")].reset_index(drop=True).copy()
-    if not keep_non_english:
-        tweet_data = tweet_data.loc[tweet_data["lang"]=="en"].reset_index(drop=True).copy()
-    ## Tokenize Text
-    tweet_data["text_tokenized"] = tweet_data["text"].map(tokenizer.tokenize)
-    # ## Datetime Conversion
-    tweet_data["created_utc"] = pd.to_datetime(tweet_data["created_at"]).map(lambda x:  int(x.timestamp()))
-    ## Add Meta
-    tweet_data["source"] = f
-    tweet_data["entity_type"] = "tweet"
-    tweet_data["date_processed_utc"] = int(datetime.utcnow().timestamp())
-    ## Rename Columns and Subset
-    tweet_data.rename(columns = DB_SCHEMA["twitter"]["tweet"], inplace=True)
-    tweet_data = tweet_data[list(DB_SCHEMA["twitter"]["tweet"].values())]
-    ## Format Into JSON
-    formatted_data = tweet_data.apply(lambda row: row.to_json(), axis=1).tolist()
-    formatted_data = list(map(lambda x: json.loads(x), formatted_data))
+    ## Initalize Loader
+    loader = RawDataLoader(platform="twitter",
+                           random_state=None,
+                           lang=None,
+                           run_pipeline=True,
+                           keep_retweets=keep_retweets,
+                           keep_non_english=keep_non_english)
+    ## Load Data
+    formatted_data = loader.load_and_process(f,min_date=min_date,max_date=max_date)
     ## Dump Processed Data (or return)
     if output_folder is None:
         return formatted_data
@@ -201,13 +188,17 @@ def process_tweet_file(f,
         return fname
 
 def process_reddit_comment_file(f,
-                                output_folder):
+                                min_date=None,
+                                max_date=None,
+                                output_folder=None):
     """
     Process raw tweet data and cache in a processed form
 
     Args:
         f (str): Path to comment data. Expected to contain all comments
                  desired for a single individual
+        min_date
+        max_date
         output_folder (str): Path to output folder for caching processed
                              data. If None, returns processed data itself
     
@@ -226,36 +217,13 @@ def process_reddit_comment_file(f,
         fname = f"{output_folder}/{fname}"
         if os.path.exists(fname):
             return fname
-    ## Load Comment Data
-    if f.endswith(".gz"):
-        file_opener = gzip.open
-    else:
-        file_opener = open
-    try:
-        with file_opener(f, "r") as the_file:
-            comment_data = json.load(the_file)
-    except json.JSONDecodeError:
-        with file_opener(f, "r") as the_file:
-            comment_data = []
-            for line in the_file:
-                comment_data.append(json.loads(line))
-    ## Check Data
-    if len(comment_data) == 0:
-        return None
-    ## Transform into DataFrame
-    comment_data = pd.DataFrame(comment_data).dropna(subset=["body"])
-    ## Tokenize Text
-    comment_data["text_tokenized"] = comment_data["body"].map(tokenizer.tokenize)
-    ## Add Meta
-    comment_data["source"] = f
-    comment_data["entity_type"] = "comment"
-    comment_data["date_processed_utc"] = int(datetime.utcnow().timestamp())
-    ## Rename Columns and Subset
-    comment_data.rename(columns = DB_SCHEMA["reddit"]["comment"], inplace=True)
-    comment_data = comment_data[list(DB_SCHEMA["reddit"]["comment"].values())]
-    ## Format Into JSON
-    formatted_data = comment_data.apply(lambda row: row.to_json(), axis=1).tolist()
-    formatted_data = list(map(lambda x: json.loads(x), formatted_data))
+    ## Initalize Loader
+    loader = RawDataLoader(platform="reddit",
+                           random_state=None,
+                           lang=None,
+                           run_pipeline=True)
+    ## Load Data
+    formatted_data = loader.load_and_process(f,min_date=min_date,max_date=max_date)
     ## Dump Processed Data (or return)
     if output_folder is None:
         return formatted_data
@@ -273,14 +241,22 @@ def main():
     ## Identifty Input Files for Processing
     filenames = get_file_list(args)
     LOGGER.info("Found {} files for processing".format(len(filenames)))
+    ## Parse Date Filters
+    LOGGER.info("[Parsing Date Filters]")
+    min_date = None if not args.min_date else pd.to_datetime(args.min_date)
+    max_date = None if not args.max_date else pd.to_datetime(args.max_date)
     ## Identity Processor
     if args.platform == "twitter":
         mp = partial(process_tweet_file,
+                     min_date=min_date,
+                     max_date=max_date,
                      output_folder=args.output_folder,
                      keep_retweets=args.keep_retweets,
                      keep_non_english=args.keep_non_english)
     elif args.platform == "reddit":
         mp = partial(process_reddit_comment_file,
+                     min_date=min_date,
+                     max_date=max_date,
                      output_folder=args.output_folder)
     ## Process Files
     pool = Pool(args.jobs)

@@ -41,21 +41,11 @@ DATA_PATHS = {
                 "suffix":"comments.tar.gz",
                 "meta_suffix":"comments.meta.tar.gz"
               },
-    ("clpsych","clpsych_deduped","multitask","merged"):{
+    ("clpsych","multitask"):{
                 "path":f"{DATA_DIR}processed/twitter/qntfy/",
                 "suffix":"tweets.tar.gz",
                 "meta_suffix":"tweets.meta.tar.gz"
                 },
-    ("shen2017", ):{
-                "path":f"{DATA_DIR}processed/twitter/shen2017/",
-                "suffix":"tweets.tar.gz",
-                "meta_suffix":"tweets.meta.tar.gz"
-                },
-    ("rsdd", ):{
-                "path":f"{DATA_DIR}processed/reddit/rsdd/",
-                "suffix":"posts.tar.gz",
-                "meta_suffix":"posts.meta.tar.gz"
-              },
     ("smhd", ):{
                 "path":f"{DATA_DIR}processed/reddit/smhd/",
                 "suffix":"posts.tar.gz",

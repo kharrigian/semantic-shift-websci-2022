@@ -8,6 +8,7 @@
 import os
 import sys
 from functools import partial
+from multiprocessing import Pool
 
 ## External Libraries
 import numpy as np
@@ -19,7 +20,6 @@ from sklearn.feature_extraction import DictVectorizer
 
 ## Local Modules
 from .vocab import Vocabulary
-from ..util.multiprocessing import MyPool as Pool
 from ..util.helpers import flatten
 
 ##################

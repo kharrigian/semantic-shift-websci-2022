@@ -4,9 +4,6 @@ Prepare a tokenized version of the SMHD dataset. Only processes
 users matched as "control" or "depression"
 """
 
-## Multiprocessing
-NUM_PROCESSES = 8
-
 ## Data Directory Paths
 RAW_DATA_DIR = "./data/raw/reddit/SMHDv1.1/"
 PROCESSED_DATA_DIR = "./data/processed/reddit/smhd/"
@@ -44,7 +41,7 @@ from semshift.preprocess.preprocess import (tokenizer,
 logger = initialize_logger()
 
 ## Root Directory
-ROOT_DIR = os.path.abspath(os.path.dirname(__file__) + "/../../../")
+ROOT_DIR = os.path.abspath(os.path.dirname(__file__) + "/../../../../")
 
 #####################
 ### Helper Functions
@@ -152,14 +149,10 @@ def process_file(filename,
     Returns:
         None
     """
-    ## Helper Function with Parameters
-    with Pool(processes=NUM_PROCESSES) as mp:
-        mp_func = partial(process_json_line,
-                        filename=filename,
-                        current_date=current_date)
-        ## Read File and Map Processing Function
-        with gzip.open(filename, "r") as the_file:
-            _ = list(mp.imap_unordered(mp_func, the_file))
+    ## Read File and Apply Processing Function
+    with gzip.open(filename, "r") as the_file:
+        for l, line in enumerate(the_file):
+            _ = process_json_line(line, filename=filename, current_date=current_date)
 
 def main():
     """
