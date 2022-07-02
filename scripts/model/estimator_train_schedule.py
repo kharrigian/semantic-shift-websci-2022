@@ -11,7 +11,7 @@ Schedule multiple training scripts across pairs of labeled and unlabeled dataset
 OUTPUT_DIR = "./data/results/estimator/train-adaptation/"
 
 ## Root Project Directory
-BASE_DIR = "/export/c01/kharrigian/semantic-shift/websci-2022/"
+BASE_DIR = "/export/c01/kharrigian/semantic-shift-websci-2022/"
 
 ## Dataset Paths
 LABELED_DATASETS = {
@@ -35,8 +35,8 @@ UNLABELED_DATASETS = {
 
 ## Training Configuration Templates
 CONFIGURATIONS = {
-    "twitter":"./configs/experiments/estimator/parameterized/train/twitter.json",
-    "reddit":"./configs/experiments/estimator/parameterized/train/reddit.json"
+    "twitter":"./configs/estimator/parameterized/train/twitter.json",
+    "reddit":"./configs/estimator/parameterized/train/reddit.json"
 }
 
 ## Training Script Flags (Comment Out Those Not Desired)
@@ -46,6 +46,9 @@ ADDED_FLAGS = [
     "--classify_enforce_min_shift_frequency_filter",
     # "--classify_enforce_target"
 ]
+
+## User Scheduler or Not (Turn off if doing non-SGE implementation)
+USE_SCHEDULER = False
 
 ## Scheduling Parameters
 GRID_JOBS = 8
@@ -151,7 +154,7 @@ def format_parallel_script_train(lower_bound,
     #!/bin/bash
     {}
     {}
-    python scripts/experiments/estimator_train.py {}/$SGE_TASK_ID.json --output_dir {} --jobs {} {}
+    python scripts/model/estimator_train.py {}/$SGE_TASK_ID.json --output_dir {} --jobs {} {}
     """.format(header,
                init,
                config_dir,
@@ -202,11 +205,12 @@ def schedule_train(schedule_dir,
         ## Cache
         job_files.append(script_file)
     ## Schedule Jobs
-    LOGGER.info(f"[Scheduling {len(job_files)} Job Arrays for {n_configs} Samples]")
-    for job_file in job_files:
-        command = f"qsub {job_file}"
-        job_id = subprocess.check_output(command, shell=True)
-        LOGGER.info(job_id)
+    if USE_SCHEDULER:
+        LOGGER.info(f"[Scheduling {len(job_files)} Job Arrays for {n_configs} Samples]")
+        for job_file in job_files:
+            command = f"qsub {job_file}"
+            job_id = subprocess.check_output(command, shell=True)
+            LOGGER.info(job_id)
 
 def create_configurations():
     """
@@ -278,7 +282,10 @@ def main():
                            memory_per_job=GRID_MEMORY_PER_JOB,
                            max_array_size=GRID_MAX_ARRAY_SIZE,
                            max_tasks_concurrent=GRID_MAX_CONCURRENT_TASKS)
-    LOGGER.info("[Scheduling Complete]")
+    if USE_SCHEDULER:
+        LOGGER.info("[Scheduling Complete]")
+    else:
+        LOGGER.info("[Script Writing Complete]")
 
 #######################
 ### Execution

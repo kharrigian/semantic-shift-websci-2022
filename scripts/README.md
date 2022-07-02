@@ -26,7 +26,7 @@ Once you have the unlabeled datasets processed, you can apply additional filteri
 
 ## Phase 3: Modeling and Experimentation
 
-Once data has been curated, we can move on to the fun stuff - modeling and data analysis. Everything relevant can be found in `scripts/model/`. There are 4 main sections of analysis, each of which is described in detail within the README within the `scripts/model/` directory.
+Once data has been curated, we can move on to the fun stuff - modeling and data analysis. Everything relevant can be found in `scripts/model/`. There are 4 main sections of analysis, each of which is described in detail within the README within the `scripts/model/` directory. The README file within `scripts/model/` provides a comprehensive overview of each set of experiments/analysis.
 
 * `track`: Measure prevalence of certain keywords/phrases over the course of time.
 * `word2vec`: Train word2vec embedding models and evaluate use of semantic stability as a feature selection method.

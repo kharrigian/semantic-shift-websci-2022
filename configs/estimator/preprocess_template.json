@@ -1,10 +1,11 @@
 {
-    "output":"./data/results/estimator/datasets/gardenhose/english-only_min-freq-50_include-rt/",
+    "output":"./data/results/estimator/datasets/gardenhose/",
     "inputs":[
-        "./data/processed/twitter/gardenhose/*.gz"
+        "./data/processed/twitter/gardenhose-filtered/*.gz"
     ],
     "inputs_metadata":{
-        "platform":"twitter"
+        "platform":"twitter",
+        "user_per_file":false
     },
 
     "cache_user_criteria":{
@@ -53,9 +54,9 @@
             "max_tokens_per_document": null,
             "max_documents_per_user": null
         },
-        "phrasers":"./embeddings/gardenhose/primary/",
+        "phrasers":"./data/results/estimator/embeddings/clpsych/primary/",
         "vocabulary":[
-            "./embeddings/gardenhose/primary/vocabulary.txt"
+            "./data/results/estimator/embeddings/clpsych/primary/vocabulary.txt"
         ]
     },
 

@@ -66,16 +66,6 @@ def load_txt(filename, func=None):
         data = [func(d) for d in data]
     return data
 
-def load_post_counts(directory):
-    """
-
-    """
-    ## Load Data
-    counts = sparse.load_npz(f"{directory}/counts.npz")
-    time_bins = load_txt(f"{directory}/time_bins.txt", func=lambda x: list(map(int, x.split())))
-    users = load_txt(f"{directory}/users.txt", func=None)
-    return counts, time_bins, users
-
 def add_months(date, n):
     """
     
@@ -115,9 +105,9 @@ def load_keyword_tracking(platform,
     """
     ## Path to Tracking Results
     if platform == "twitter":
-        tracking_dir = "./data/results/tracker/gardenhose/"
+        tracking_dir = "./data/results/track/gardenhose/"
     elif platform == "reddit":
-        tracking_dir = "./data/results/tracker/reddit-active/"
+        tracking_dir = "./data/results/track/active/"
     else:
         raise ValueError("Platform Not Recognized.")
     ## Load Data
@@ -158,7 +148,8 @@ def load_keyword_tracking(platform,
 def load_overlap_scores(platform,
                         matches_normed_delta):
     """
-    
+    These are outputs from scripts/model/util/semantic_vocabulary_selection.py applied
+    to compute year-over-year within-platform change in semantics.
     """
     ## Appropriate File
     if platform == "twitter":
@@ -181,35 +172,6 @@ def load_overlap_scores(platform,
     keyword_subset = overlap_scores_df.loc[overlap_scores_df.index.isin(matches_normed_delta.index)] 
     non_keyword_subset = overlap_scores_df.loc[~overlap_scores_df.index.isin(keyword_subset.index)]
     return overlap_scores_df, keyword_subset, non_keyword_subset
-
-def get_users_available_by_threshold(activity_dir,
-                                     time_periods,
-                                     thresholds = [10, 25, 50, 75, 100, 150, 200],
-                                     window_size=4,
-                                     slide_size=1):
-    """
-    
-    """
-    ## Get Dataset and Time Periods
-    dir_to_dataset = lambda path: path.split("/post-temporal-grouped/")[0].split("/")[-1]
-    dir_dataset = dir_to_dataset(activity_dir)
-    date_boundaries = time_periods.get(dir_dataset)
-    ## Load Count Data
-    counts, time_bins, _ = load_post_counts(activity_dir)
-    ## Get Windows 
-    windows = get_monthly_windows(date_boundaries, window_size, slide_size)
-    time_bins_dt = np.array([[datetime.utcfromtimestamp(i), datetime.utcfromtimestamp(j)] for i, j in time_bins])
-    windows_inds = [np.logical_and(time_bins_dt[:,0] >= start, time_bins_dt[:,0] < end).nonzero()[0] for start, end in windows]
-    ## Aggregate Counts Within Windows
-    windows_counts = np.vstack([counts[:,inds].sum(axis=1).A.T[0] for inds in windows_inds])
-    ## Get Users Per Threshold
-    threshold_counts = np.zeros((len(thresholds), windows_counts.shape[0]), dtype=int)
-    for t, threshold in enumerate(thresholds):
-        threshold_counts[t] = (windows_counts >= threshold).sum(axis=1)
-    threshold_counts = pd.DataFrame(threshold_counts,
-                                    index=thresholds,
-                                    columns=["{} : {}".format(w[0].date().isoformat(),w[1].date().isoformat()) for w in windows]).T
-    return threshold_counts
 
 def bootstrap_ci(x,
                  alpha=0.05,

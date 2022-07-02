@@ -34,9 +34,10 @@
     ],
     "sample_protocol":{
         "resample":false,
-        "n_sample":100,
+        "n_sample":10,
         "test_size":0.2,
-        "resample_files":true
+        "resample_files":true,
+        "baselines":null
     },
     "model_kwargs":{
         "dim":100,

@@ -588,7 +588,7 @@ def main():
             ## Baseline Protocol (Randomly Split Files into Groups)
             if baselines is None:
                 dataset_filename2label = {"all":dataset_filename2label}
-            if baselines == "file":
+            elif baselines == "file":
                 dataset_filename2label = _split_files_for_baseline(dataset_filename2label, random_state=config.get("random_seed"))
             elif baselines == "post":
                 dataset_filename2label = {"a":dataset_filename2label, "b":dataset_filename2label}

@@ -50,6 +50,9 @@ APPLY_PARAMS = {
     "--skip_existing":""
 }
 
+## Whether to Use Scheduling (SGE Access)
+USE_SCHEDULER = False
+
 ## Scheduling Parameters
 GRID_JOBS = 8
 GRID_MEMORY_PER_JOB = 64
@@ -151,7 +154,7 @@ def format_parallel_script_apply(lower_bound,
     #!/bin/bash
     {}
     {}
-    python scripts/experiments/estimator_apply.py {}/$SGE_TASK_ID.json {} --run_predict --run_analyze
+    python scripts/model/estimator_apply.py {}/$SGE_TASK_ID.json {} --run_predict --run_analyze
     """.format(header,
                init,
                config_dir,
@@ -198,11 +201,12 @@ def schedule_apply(schedule_dir,
         ## Cache
         job_files.append(script_file)
     ## Schedule Jobs
-    LOGGER.info(f"[Scheduling {len(job_files)} Job Arrays for {n_configs} Samples]")
-    for job_file in job_files:
-        command = f"qsub {job_file}"
-        job_id = subprocess.check_output(command, shell=True)
-        LOGGER.info(job_id)
+    if USE_SCHEDULER:
+        LOGGER.info(f"[Scheduling {len(job_files)} Job Arrays for {n_configs} Samples]")
+        for job_file in job_files:
+            command = f"qsub {job_file}"
+            job_id = subprocess.check_output(command, shell=True)
+            LOGGER.info(job_id)
 
 def get_model_dirs(trained_dataset_path):
     """
@@ -277,7 +281,10 @@ def main():
                            memory_per_job=GRID_MEMORY_PER_JOB,
                            max_array_size=GRID_MAX_ARRAY_SIZE,
                            max_tasks_concurrent=GRID_MAX_CONCURRENT_TASKS)
-    LOGGER.info("[Scheduling Complete]")
+    if USE_SCHEDULER:
+        LOGGER.info("[Scheduling Complete]")
+    else:
+        LOGGER.info("[Script Writing Complete]")
 
 ##########################
 ### Execution

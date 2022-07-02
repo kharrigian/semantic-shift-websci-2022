@@ -665,7 +665,7 @@ def count_users(config,
         with Pool(jobs) as mp:
             _ = list(tqdm(mp.imap_unordered(counter, filename_inputs), total=len(filename_inputs), desc="[Counting User Activity]", file=sys.stdout))
     else:
-        for fi in filename_inputs:
+        for fi in tqdm(filename_inputs, total=len(filename_inputs), desc="[Counting User Activity]", file=sys.stdout):
             _ = counter(fi)
         
 def _load_counts(count_file):
@@ -726,8 +726,8 @@ def analyze_counts(config,
         uni_users = set.union(*tusers)
         int_users = set.intersection(*tusers)
         ## Aggregate Number of Posts
-        counts_uni = [Counter({x:y for x, y in tp_counts.items() if x in uni_users}) for tp_counts in counts]
-        counts_agg = sum(counts, Counter())
+        counts_agg = [Counter({x:y for x, y in tp_counts.items() if x in uni_users}) for tp_counts in counts]
+        counts_agg = sum(counts_agg, Counter())
         ## Cache
         X[t, -2] = len(uni_users)
         X[t, -1] = len(int_users)
