@@ -1,0 +1,9 @@
+{
+    "experiment_id":"clpsych-gardenhose",
+
+    "output_dir":"./data/results/estimator/apply/twitter",
+    "models_dir":"./data/results/estimator/train-adaptation/clpsych-gardenhose/models/",
+    "vector_dir":"./data/results/estimator/datasets/gardenhose/vectors/",
+
+    "min_n_posts":null
+}

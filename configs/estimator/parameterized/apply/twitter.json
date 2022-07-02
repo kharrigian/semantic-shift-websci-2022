@@ -1,0 +1,9 @@
+{
+    "experiment_id":"twitter-template",
+
+    "output_dir":"./data/results/estimator/apply/",
+    "models_dir":"./data/results/estimator/train-adaptation/<PATH_TO_MODEL>",
+    "vector_dir":"./data/results/estimator/datasets/gardenhose/vectors/",
+
+    "min_n_posts":200
+}

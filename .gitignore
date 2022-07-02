@@ -1,0 +1,27 @@
+
+## Artifacts
+*.pyc
+*pycache*
+*.DS_Store*
+*ipynb_checkpoints*
+*.egg-info*
+
+## Workspace
+.vscode/
+*workspace
+
+## Testing Artifacts
+*.coverage*
+*htmlcov*
+*.pkz
+
+## Data
+logs/
+data/raw/
+data/processed/
+data/results/
+data/resources/glove.twitter*
+data/resources/liwc2007.dic
+
+## Plots
+plots/

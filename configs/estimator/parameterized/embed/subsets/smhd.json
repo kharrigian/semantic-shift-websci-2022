@@ -1,0 +1,79 @@
+{
+    "experiment_name": "smhd/subsets",
+    "datasets":[
+        {
+            "dataset":"smhd",
+            "dataset-id":"smhd",
+            "preprocessed":true,
+            "target_disorder":"depression",
+            "include_classes":{
+                "control":true,
+                "depression":true
+            },
+            "kfolds":5,
+            "stratified":true,
+            "test_size":0.2,
+            "include":{
+                "train":true,
+                "dev":true,
+                "test":true
+            },
+            "date_boundaries":{
+                "min_date":"2013-01-01",
+                "max_date":"2018-01-01"
+            },
+            "downsample":false,
+            "downsample_size":null,
+            "rebalance":true,
+            "class_ratio":[1,1],
+            "post_sampling":{
+                "n_samples":null,
+                "randomized":true
+            }
+        }
+    ],
+    "sample_protocol":{
+        "resample":true,
+        "n_sample":10,
+        "test_size":0.2,
+        "resample_files":true
+    },
+    "model_kwargs":{
+        "dim":100,
+        "window":5,
+        "sample":0.001,
+        "jobs":8,
+        "sg":0,
+        "hs":0,
+        "negative":5,
+        "max_iter":20,
+        "compute_loss":true,
+        "max_n_gram":3,
+        "phrase_threshold":10,
+        "min_vocab_count":5,
+        "max_vocab_size":500000
+    },
+    "mode":0,
+    "vocab_kwargs": {
+        "preserve_case": false,
+        "filter_negate": true,
+        "filter_upper": true,
+        "filter_punctuation": true,
+        "filter_numeric": true,
+        "filter_user_mentions": true,
+        "filter_url": true,
+        "filter_retweet": true,
+        "filter_stopwords": false,
+        "keep_pronouns": true,
+        "emoji_handling": null,
+        "filter_hashtag":false,
+        "strip_hashtag":false,
+        "filter_mh_subreddits":"all",
+        "filter_mh_terms":"smhd",
+        "max_tokens_per_document": null,
+        "max_documents_per_user": null,
+        "lang":["en"]
+    },
+    "jobs": 8,
+    "random_seed":42
+}

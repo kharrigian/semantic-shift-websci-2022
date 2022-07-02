@@ -1,0 +1,47 @@
+{
+    "experiment_name":"gardenhose",
+    "datasets":[
+        {
+            "dataset":"/export/c01/kharrigian/semantic-shift-websci-2022/data/processed/twitter/gardenhose/*.gz",
+            "target_disorder":"custom-twitter",
+            "date_boundaries":{
+                "min_date":null,
+                "max_date":null
+            },
+            "downsample":false,
+            "downsample_size":null,
+            "post_sampling":{
+                "n_samples":null
+            },
+            "lang":["en"]
+        }
+    ],
+    "model_kwargs":{
+        "include_mentions":false
+    },
+    "agg_kwargs":{
+        "frequency":"day"
+    },
+    "cache_rate":null,
+    "terms":[
+        {
+            "include_hashtags":true,
+            "terms":"./data/resources/keywords/pmi.keywords"
+        },
+        {
+            "include_hashtags":true,
+            "terms":"./data/resources/keywords/crisis_level1.keywords"
+        },
+        {
+            "include_hashtags":true,
+            "terms":"./data/resources/keywords/crisis_level2.keywords"
+        },
+        {
+            "include_hashtags":true,
+            "terms":"./data/resources/keywords/crisis_level3.keywords"
+        }
+    ],  
+    "jobs": 1,
+    "chunksize":1,
+    "random_seed":42
+}

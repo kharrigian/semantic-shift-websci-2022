@@ -1,0 +1,75 @@
+{
+    "output": "./data/results/estimator/datasets/active/",
+    "inputs": [
+        "/export/c01/kharrigian/semantic-shift-websci-2022/data/processed/reddit/active/*.gz"
+    ],
+    "inputs_metadata": {
+        "platform": "reddit",
+        "user_per_file": true
+    },
+    "cache_user_criteria": {
+        "date_boundaries": [
+            {
+                "min_date": "2019-03-01",
+                "max_date": "2019-07-01"
+            },
+            {
+                "min_date": "2020-03-01",
+                "max_date": "2020-07-01"
+            }
+        ],
+        "min_posts_per_date_boundary": 50,
+        "intersection": false,
+        "lang": [
+            "en"
+        ],
+        "include_retweets": true
+    },
+    "cache_kwargs": {
+        "chunksize": 1000,
+        "within_chunk_chunksize": 25000,
+        "date_boundaries": {
+            "min_date": "2019-01-01",
+            "max_date": "2020-07-01"
+        },
+        "sample_rate": null
+    },
+    "vectorize_kwargs": {
+        "min_n_posts": 100,
+        "n_posts": null,
+        "date_boundaries": [
+            {
+                "min_date": "2019-03-01",
+                "max_date": "2019-07-01"
+            },
+            {
+                "min_date": "2020-03-01",
+                "max_date": "2020-07-01"
+            }
+        ],
+        "vocab_kwargs": {
+            "preserve_case": false,
+            "filter_negate": true,
+            "filter_upper": true,
+            "filter_punctuation": true,
+            "filter_numeric": true,
+            "filter_user_mentions": true,
+            "filter_url": true,
+            "filter_retweet": true,
+            "filter_stopwords": false,
+            "keep_pronouns": true,
+            "emoji_handling": null,
+            "filter_hashtag": false,
+            "strip_hashtag": false,
+            "filter_mh_subreddits": null,
+            "filter_mh_terms": null,
+            "max_tokens_per_document": null,
+            "max_documents_per_user": null
+        },
+        "phrasers": "",
+        "vocabulary": [
+            ""
+        ]
+    },
+    "random_state": 42
+}

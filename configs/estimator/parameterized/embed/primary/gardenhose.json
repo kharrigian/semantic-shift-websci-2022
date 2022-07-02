@@ -1,0 +1,67 @@
+{
+    "experiment_name": "gardenhose/primary",
+    "datasets":[
+        {
+            "dataset":"./data/results/estimator/datasets/gardenhose/filtered/*.gz",
+            "dataset-id":"gardenhose",
+            "preprocessed":true,
+            "target_disorder":"custom-twitter",
+            "date_boundaries":{
+                "min_date":"2019-01-01",
+                "max_date":"2020-07-01"
+            },
+            "downsample":false,
+            "downsample_size":null,
+            "rebalance":null,
+            "class_ratio":null,
+            "post_sampling":{
+                "n_samples":0.2
+            },
+            "lang":null
+        }
+    ],
+    "sample_protocol":{
+        "resample":false,
+        "n_sample":10,
+        "test_size":0.0,
+        "resample_files":false
+    },
+    "model_kwargs":{
+        "dim":100,
+        "window":5,
+        "sample":0.001,
+        "jobs":8,
+        "sg":0,
+        "hs":0,
+        "negative":5,
+        "max_iter":20,
+        "compute_loss":true,
+        "max_n_gram":3,
+        "phrase_threshold":10,
+        "min_vocab_count":5,
+        "max_vocab_size":500000
+    },
+    "mode":0,
+    "vocab_kwargs": {
+        "preserve_case": false,
+        "filter_negate": true,
+        "filter_upper": true,
+        "filter_punctuation": true,
+        "filter_numeric": true,
+        "filter_user_mentions": true,
+        "filter_url": true,
+        "filter_retweet": true,
+        "filter_stopwords": false,
+        "keep_pronouns": true,
+        "emoji_handling": null,
+        "filter_hashtag":false,
+        "strip_hashtag":false,
+        "filter_mh_subreddits":null,
+        "filter_mh_terms":null,
+        "max_tokens_per_document": null,
+        "max_documents_per_user": null,
+        "lang":null
+    },
+    "jobs": 8,
+    "random_seed":42
+}

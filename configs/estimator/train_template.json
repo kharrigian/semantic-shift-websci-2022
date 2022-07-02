@@ -1,0 +1,59 @@
+{
+    "experiment_id":"clpsych-gardenhose",
+    
+    "source":{
+        "config":"./data/results/estimator/embeddings/clpsych/subsets/config.json",
+        "splits":"./data/results/estimator/embeddings/clpsych/subsets/splits/clpsych/0.json",
+        "embeddings":"./data/results/estimator/embeddings/clpsych/subsets/models/sample-0/",
+        "min_vocab_freq":50,
+        "min_shift_freq":50,
+        "top_k_neighbors":500,
+        "rm_top":250,
+        "rm_stopwords":true
+    },
+    "target":{
+        "config":"./data/results/estimator/embeddings/gardenhose/primary/config.json",
+        "splits":"./data/results/estimator/embeddings/gardenhose/primary/splits/gardenhose/0.json",
+        "embeddings":"./data/results/estimator/embeddings/gardenhose/primary/",
+        "min_vocab_freq":50,
+        "min_shift_freq":50,
+        "top_k_neighbors":500,
+        "rm_top":250,
+        "rm_stopwords":true
+    },
+    "evaluation":{
+        "config":"./data/results/estimator/embeddings/clpsych/subsets/config.json",
+        "splits":"./data/results/estimator/embeddings/clpsych/subsets/splits/clpsych/0.json"
+    },
+
+    "classifier_k_models":10, 
+    "classifier_resample_rate":0.8,
+    "classifier_min_vocab_freq":1,
+    "classifier_min_vocab_sample_freq":1,
+    "classifier_min_n_posts":200,
+    "classifier_n_posts":null,
+
+    "selectors_percentiles":[90, 50, 10],
+    "selectors_sample_support":0.9,
+    "selectors":[
+        "cumulative",
+        "intersection",
+        "random",
+        "frequency",
+        "chi2",
+        "coefficient",
+        "overlap",
+        "weighted_overlap-coefficient_0.5"
+    ],
+
+    "cv_metric_opt":"f1",
+    "feature_standardize":false,
+    "feature_flags":{
+        "tfidf":true
+    },
+    "feature_kwargs":{
+        "tfidf":{"norm":"l2"}
+    },
+
+    "random_state":42
+}
