@@ -41,6 +41,6 @@ Once data has been acquired, you should install the library of functions (`semsh
 
 ## Questions/Comments
 
-For any additional questions, please feel free to reach out. This repository has been translated from an internal research repository and as such may be subject to small bugs. If you find anything out of the ordinary, please consider submitting the pull-request.
+For any additional questions, please feel free to reach out. This repository has been translated from an internal research repository and as such may be subject to small bugs. If you find anything out of the ordinary, please consider submitting a pull-request.
 
-From a personal perspective, this code-base is quite heavy due to the experimental procedures. If you are simply interested in applying semantically-aware feature selection, it is probably more efficient to implement it from scratch (e.g., using the general algorithm above).
+From a personal perspective, this codebase is overly-heavy due to the experimental procedures. If you are simply interested in applying semantically-aware feature selection, it is probably more efficient to implement it from scratch (e.g., using the general algorithm above).
